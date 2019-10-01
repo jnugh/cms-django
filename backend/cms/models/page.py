@@ -76,6 +76,12 @@ class Page(MPTTModel):
             status='reviewed',
         ).order_by('-version').first()
 
+    def get_mirrored_content(self, language_code):
+        """
+        This content needs to be added when delivering content to end users
+        """
+        return self.mirrored_page.get_translation(language_code).text
+
     def get_absolute_url(self):
         return reverse('edit_page', kwargs={
             'page_id': self.id,
