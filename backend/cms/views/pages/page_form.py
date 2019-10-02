@@ -105,6 +105,7 @@ class PageForm(forms.ModelForm):
         self.fields['parent'].language = language
         self.fields['parent'].queryset = parent_queryset
 
+
     # pylint: disable=W0221
     def save(self, *args, **kwargs):
 
