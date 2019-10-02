@@ -50,6 +50,7 @@ class PageForm(forms.ModelForm):
     parent = ParentField(queryset=Page.objects.all(), required=False)
     editors = forms.ModelChoiceField(queryset=get_user_model().objects.all(), required=False)
     publishers = forms.ModelChoiceField(queryset=get_user_model().objects.all(), required=False)
+    mirrored_page = forms.ModelChoiceField(queryset=Page.objects.all(), required=False)
 
     class Meta:
         model = Page
@@ -103,7 +104,6 @@ class PageForm(forms.ModelForm):
         # add the language to the parent field to make sure the translated page titles are shown
         self.fields['parent'].language = language
         self.fields['parent'].queryset = parent_queryset
-
 
     # pylint: disable=W0221
     def save(self, *args, **kwargs):
