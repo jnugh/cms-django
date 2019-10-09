@@ -40,6 +40,7 @@ class Page(MPTTModel):
     region = models.ForeignKey(Region, related_name='pages', on_delete=models.CASCADE)
     archived = models.BooleanField(default=False)
     mirrored_page = models.ForeignKey('self', null=True, blank=True, on_delete=models.PROTECT)
+    mirrored_page_first = models.BooleanField(default=True)
     editors = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='editors', blank=True)
     publishers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='publishers', blank=True)
     created_date = models.DateTimeField(default=timezone.now)
@@ -76,7 +77,7 @@ class Page(MPTTModel):
             status='reviewed',
         ).order_by('-version').first()
 
-    def get_mirrored_content(self, language_code):
+    def get_mirrored_text(self, language_code):
         """
         This content needs to be added when delivering content to end users
         """
@@ -205,6 +206,15 @@ class PageTranslation(models.Model):
                     'url': other_translation.permalink
                 }
         return available_languages
+
+    @property
+    def combined_text(self):
+        """
+        Combines the text from the PageTranslation with the text from the mirrored page.
+        """
+        if self.page.mirrored_page_first:
+            return self.page.get_mirrored_text(self.language.code) + self.text
+        return self.text + self.page.get_mirrored_text(self.language.code)
 
     def __str__(self):
         return '(id: {}, slug: {})'.format(self.id, self.slug)
