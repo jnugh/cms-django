@@ -51,6 +51,10 @@ class PageForm(forms.ModelForm):
     editors = forms.ModelChoiceField(queryset=get_user_model().objects.all(), required=False)
     publishers = forms.ModelChoiceField(queryset=get_user_model().objects.all(), required=False)
     mirrored_page = forms.ModelChoiceField(queryset=Page.objects.all(), required=False)
+    mirrored_page_first = forms.TypedChoiceField(
+        coerce=lambda x: x == 'True',
+        choices=((False, 'False'), (True, 'True')),
+        widget=forms.RadioSelect)
 
     class Meta:
         model = Page
@@ -101,6 +105,14 @@ class PageForm(forms.ModelForm):
             parent_queryset = parent_queryset.exclude(id__in=children)
             self.fields['parent'].initial = self.instance.parent
 
+        self.mirrored_page = forms.ModelChoiceField(queryset=Page.objects.all(), required=False)
+        self.mirrored_page_first = forms.TypedChoiceField(
+            coerce=lambda x: x == 'True',
+            choices=((False, 'False'), (True, 'True')),
+            widget=forms.RadioSelect)
+        self.fields['mirrored_page'].initial = self.instance.mirrored_page
+        self.fields['mirrored_page_first'].initial = self.instance.mirrored_page_first
+
         # add the language to the parent field to make sure the translated page titles are shown
         self.fields['parent'].language = language
         self.fields['parent'].queryset = parent_queryset
@@ -123,6 +135,8 @@ class PageForm(forms.ModelForm):
             # only update these values when page is created
             page.region = self.region
         page.archived = bool(self.data.get('submit_archive'))
+        page.mirrored_page_first = self.cleaned_data['mirrored_page_first']
+        page.mirrored_page = self.cleaned_data['mirrored_page']
         page.save()
         page.move_to(self.cleaned_data['parent'], self.cleaned_data['position'])
 
