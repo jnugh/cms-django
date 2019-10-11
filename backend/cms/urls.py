@@ -162,6 +162,11 @@ urlpatterns = [
             pages.revoke_page_permission_ajax,
             name='revoke_page_permission_ajax'
         ),
+        url(
+            r'^get_pages_list$',
+            pages.get_pages_list_ajax,
+            name='get_pages_list_ajax'
+        )
     ])),
 
     url(r'^(?P<region_slug>[-\w]+)/', include([

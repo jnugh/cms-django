@@ -447,3 +447,9 @@ def revoke_page_permission_ajax(request):
             'level_tag': level_tag
         }
     })
+
+@login_required
+@permission_required('cms.edit_pages', raise_exception=True)
+def get_pages_list_ajax(request):
+    pass
+    # get all pages for region
