@@ -10,7 +10,7 @@ from django.contrib.auth.models import Permission
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
-from ...models import Page, PageTranslation
+from ...models import Page, PageTranslation, Region
 from ..utils.tree_utils import POSITION_CHOICES
 from ..utils.slug_utils import generate_unique_slug
 
@@ -50,6 +50,7 @@ class PageForm(forms.ModelForm):
     parent = ParentField(queryset=Page.objects.all(), required=False)
     editors = forms.ModelChoiceField(queryset=get_user_model().objects.all(), required=False)
     publishers = forms.ModelChoiceField(queryset=get_user_model().objects.all(), required=False)
+    mirrored_page_region = forms.ModelChoiceField(queryset=Region.objects.all())
     mirrored_page = forms.ModelChoiceField(queryset=Page.objects.all(), required=False)
     mirrored_page_first = forms.TypedChoiceField(
         coerce=lambda x: x == 'True',

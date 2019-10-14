@@ -10,7 +10,8 @@ from .page import (
     download_page_xliff,
     upload_page,
     grant_page_permission_ajax,
-    revoke_page_permission_ajax
+    revoke_page_permission_ajax,
+    get_pages_list_ajax
 )
 from .archive import ArchivedPagesView
 from .sbs_page import SBSPageView
