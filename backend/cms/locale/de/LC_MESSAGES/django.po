@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-19 13:50+0200\n"
+"POT-Creation-Date: 2019-10-18 00:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Florian Hofhammer <hofhammer@integreat-app.de>\n"
 "Language-Team:\n"
@@ -16,6 +16,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: models/event.py:135
+msgid "Start date and end date mustn't be empty"
+msgstr "Start- und Enddatum dürfen nicht leer sein"
+
+#: models/event.py:138
+msgid "Recurrence end date has to be after the event's start date"
+msgstr "Das Ende der Wiederholung muss nach dem Veranstaltungsbeginn sein"
+
+#: models/event.py:140
+msgid "Start time and end time must either be both empty or both filled out"
+msgstr ""
+"Start- und End-Zeit müssen entweder beide leer oder beide ausgefüllt sein"
+
+#: models/event.py:143
+msgid "The end of the event can't be before the start of the event"
+msgstr "Das Ende der Veranstaltung kann nicht vor seinem Beginn sein"
 
 #: models/event.py:236 models/page.py:149
 msgid "Draft"
@@ -220,7 +237,7 @@ msgstr "Speichern"
 msgid "Publish"
 msgstr "Veröffentlichen"
 
-#: templates/events/event.html:47 templates/events/list_events.html:33
+#: templates/events/event.html:48 templates/events/list_events.html:33
 #: templates/pages/archive.html:21 templates/pages/page.html:43
 #: templates/pages/tree.html:57 templates/pois/list.html:32
 #: templates/pois/poi.html:36 templates/push_notifications/list.html:24
@@ -228,109 +245,129 @@ msgstr "Veröffentlichen"
 msgid "Title"
 msgstr "Titel"
 
-#: templates/events/event.html:48 templates/pages/page.html:44
+#: templates/events/event.html:49 templates/pages/page.html:44
 #: templates/pages/sbs_page.html:30 templates/pois/poi.html:37
 msgid "Insert title here"
 msgstr "Titel hier eingeben"
 
-#: templates/events/event.html:51 templates/pois/poi.html:40
+#: templates/events/event.html:52 templates/pois/poi.html:40
 msgid "Description"
 msgstr "Beschreibung"
 
-#: templates/events/event.html:52 templates/pois/poi.html:41
+#: templates/events/event.html:53 templates/pois/poi.html:41
 msgid "Insert description here"
 msgstr "Beschreibung hier eingeben"
 
-#: templates/events/event.html:57 templates/pages/page.html:53
+#: templates/events/event.html:58 templates/pages/page.html:53
 #: templates/pois/poi.html:70
 msgid "Permalink"
 msgstr ""
 
-#: templates/events/event.html:59 templates/pages/page.html:55
+#: templates/events/event.html:60 templates/pages/page.html:55
 #: templates/pois/poi.html:72
 msgid " Leave blank to generate unique permalink from title"
 msgstr ""
 " Dieses Feld freilassen, um eine eindeutigen Permalink aus dem Titel zu "
 "generieren"
 
-#: templates/events/event.html:71 templates/events/list_events.html:44
+#: templates/events/event.html:72 templates/events/list_events.html:44
 msgid "Date and time"
 msgstr "Datum und Uhrzeit"
 
-#: templates/events/event.html:72 templates/media/medialist.html:23
+#: templates/events/event.html:73 templates/media/medialist.html:23
 msgid "Date"
 msgstr "Datum"
 
-#: templates/events/event.html:75
+#: templates/events/event.html:76
 msgid "Start (date)"
 msgstr "Beginn (Datum)"
 
-#: templates/events/event.html:79
+#: templates/events/event.html:80
 msgid "End (date)"
 msgstr "Ende (Datum)"
 
-#: templates/events/event.html:83
+#: templates/events/event.html:84
 msgid "Time"
 msgstr "Uhrzeit"
 
-#: templates/events/event.html:86
+#: templates/events/event.html:87
 msgid "Start (time)"
 msgstr "Beginn (Uhrzeit)"
 
-#: templates/events/event.html:90
+#: templates/events/event.html:91
 msgid "End (time)"
 msgstr "Ende (Uhrzeit)"
 
-#: templates/events/event.html:96
+#: templates/events/event.html:97
 msgid "All-day"
 msgstr "Ganztägig"
 
-#: templates/events/event.html:98
+#: templates/events/event.html:99
 msgid "Recurrence"
 msgstr "Wiederholung"
 
-#: templates/events/event.html:100
+#: templates/events/event.html:101
 msgid "Recurring"
 msgstr "Wiederholend"
 
 #: templates/events/event.html:104
+msgid "Frequency"
+msgstr "Frequenz"
+
+#: templates/events/event.html:107 templates/events/event.html:113
+msgid "Weekday"
+msgstr "Wochentag"
+
+#: templates/events/event.html:111
+msgid "Week"
+msgstr "Woche"
+
+#: templates/events/event.html:116
+msgid "Interval"
+msgstr "Intervall"
+
+#: templates/events/event.html:119
 msgid "Recurrence ends"
 msgstr "Wiederholung endet"
 
-#: templates/events/event.html:151 templates/language_tree/tree.html:30
+#: templates/events/event.html:122
+msgid "Recurrence end date"
+msgstr "Wiederholung Enddatum"
+
+#: templates/events/event.html:171 templates/language_tree/tree.html:30
 #: templates/language_tree/tree_node.html:28 templates/pages/page.html:96
 #: templates/pois/poi.html:87
 #: templates/push_notifications/push_notification.html:62
 msgid "Language"
 msgstr "Sprache"
 
-#: templates/events/event.html:152 templates/pages/page.html:97
+#: templates/events/event.html:172 templates/pages/page.html:97
 #: templates/pois/poi.html:88
 #: templates/push_notifications/push_notification.html:63
 msgid "Current language"
 msgstr "Aktuelle Sprache"
 
-#: templates/events/event.html:158 templates/pages/page.html:103
+#: templates/events/event.html:178 templates/pages/page.html:103
 #: templates/pois/poi.html:94
 #: templates/push_notifications/push_notification.html:70
 msgid "Translations"
 msgstr "Übersetzungen"
 
-#: templates/events/event.html:184 templates/pages/page.html:162
+#: templates/events/event.html:204 templates/pages/page.html:162
 msgid "Visibility"
 msgstr "Sichtbarkeit"
 
-#: templates/events/event.html:194 templates/pages/page.html:172
+#: templates/events/event.html:214 templates/pages/page.html:172
 #: templates/pois/poi.html:117 templates/regions/list.html:28
 #: templates/regions/region.html:74
 msgid "Status"
 msgstr "Status"
 
-#: templates/events/event.html:203
+#: templates/events/event.html:223
 msgid "Event picture"
 msgstr "Veranstaltungsbild"
 
-#: templates/events/event.html:207
+#: templates/events/event.html:227
 msgid "Set event picture"
 msgstr "Veranstaltungsbild festlegen"
 
@@ -372,10 +409,8 @@ msgid "Edit language tree node"
 msgstr "Knoten bearbeiten"
 
 #: templates/language_tree/tree_node.html:14
-#, fuzzy
-#| msgid "Language"
 msgid "Add language"
-msgstr "Sprache"
+msgstr "Sprache hinzufügen"
 
 #: templates/language_tree/tree_node.html:37
 msgid "Source Language"
@@ -754,10 +789,9 @@ msgid "No POIs available yet."
 msgstr "Noch keine POIs vorhanden."
 
 #: templates/pois/poi.html:16
-#, fuzzy, python-format
-#| msgid "Edit poi \"%(poi_title)s\""
+#, python-format
 msgid "Edit poi \"%(poi_title)s\""
-msgstr "POI \"%(page_title)s\" bearbeiten"
+msgstr "POI \"%(poi_title)s\" bearbeiten"
 
 #: templates/pois/poi.html:19
 msgid "Create new POI translation"
@@ -1279,39 +1313,38 @@ msgstr "Interner Server-Fehler"
 msgid "An unexpected error has occurred."
 msgstr "Es ist ein unerwarteter Fehler aufgetreten."
 
-#: views/events/event.py:98
+#: views/events/event.py:134
 msgid "Event was successfully created and published."
 msgstr "Veranstaltung wurde erfolgreich erstellt und veröffentlicht."
 
-#: views/events/event.py:100
+#: views/events/event.py:136
 msgid "Event was successfully created."
 msgstr "Veranstaltung wurde erfolgreich erstellt."
 
-#: views/events/event.py:104 views/pages/page.py:124
-msgid "Translation was successfully created and published."
-msgstr "Übersetzung wurde erfolgreich erstellt und veröffentlicht."
+#: views/events/event.py:140
+msgid "Event translation was successfully created and published."
+msgstr ""
+"VeranstaltungsüÜbersetzung wurde erfolgreich erstellt und veröffentlicht."
 
-#: views/events/event.py:106 views/pages/page.py:126
-#: views/pages/sbs_page.py:103
-msgid "Translation was successfully created."
-msgstr "Übersetzung wurde erfolgreich erstellt."
+#: views/events/event.py:142
+msgid "Event translation was successfully created."
+msgstr "Veranstaltungsübersetzung wurde erfolgreich erstellt."
 
-#: views/events/event.py:109 views/pages/page.py:129
-msgid "Translation was successfully published."
-msgstr "Übersetzung wurde erfolgreich veröffentlich."
+#: views/events/event.py:145
+msgid "Event translation was successfully published."
+msgstr "Veranstaltungsübersetzung wurde erfolgreich veröffentlich."
 
-#: views/events/event.py:111 views/pages/page.py:131
-#: views/pages/sbs_page.py:105
-msgid "Translation was successfully saved."
-msgstr "Übersetzung wurde erfolgreich gespeichert."
+#: views/events/event.py:147
+msgid "Event translation was successfully saved."
+msgstr "Veranstaltungsübersetzung wurde erfolgreich gespeichert."
 
-#: views/events/event.py:113 views/pages/page.py:133
+#: views/events/event.py:149 views/pages/page.py:133
 #: views/pages/sbs_page.py:107 views/pois/poi.py:113
 #: views/users/region_users.py:113 views/users/users.py:89
 msgid "No changes detected."
 msgstr "Keine Änderungen vorgenommen."
 
-#: views/events/event.py:121 views/language_tree/language_tree_node.py:70
+#: views/events/event.py:157 views/language_tree/language_tree_node.py:70
 #: views/organizations/organizations.py:72 views/pages/page.py:141
 #: views/pages/sbs_page.py:109 views/pois/poi.py:121
 #: views/push_notifications/push_notifications.py:171
@@ -1320,17 +1353,17 @@ msgstr "Keine Änderungen vorgenommen."
 msgid "Errors have occurred."
 msgstr "Es sind Fehler aufgetreten."
 
-#: views/events/event_form.py:204 views/pages/page_form.py:161
+#: views/events/event_form.py:124 views/pages/page_form.py:161
 #: views/pois/poi_form.py:72
 msgid "Public"
 msgstr "Öffentlich"
 
-#: views/events/event_form.py:205 views/pages/page_form.py:162
+#: views/events/event_form.py:125 views/pages/page_form.py:162
 #: views/pois/poi_form.py:73
 msgid "Private"
 msgstr "Privat"
 
-#: views/events/events.py:38
+#: views/events/events.py:39
 msgid "Please create at least one language node before creating events."
 msgstr ""
 "Bitte erstellen Sie mindestens einen Sprach-Knoten, bevor Sie "
@@ -1387,6 +1420,22 @@ msgstr "Seite wurde erfolgreich erstellt und veröffentlicht."
 #: views/pages/page.py:121
 msgid "Page was successfully created."
 msgstr "Seite wurde erfolgreich erstellt."
+
+#: views/pages/page.py:124
+msgid "Translation was successfully created and published."
+msgstr "Übersetzung wurde erfolgreich erstellt und veröffentlicht."
+
+#: views/pages/page.py:126 views/pages/sbs_page.py:103
+msgid "Translation was successfully created."
+msgstr "Übersetzung wurde erfolgreich erstellt."
+
+#: views/pages/page.py:129
+msgid "Translation was successfully published."
+msgstr "Übersetzung wurde erfolgreich veröffentlich."
+
+#: views/pages/page.py:131 views/pages/sbs_page.py:105
+msgid "Translation was successfully saved."
+msgstr "Übersetzung wurde erfolgreich gespeichert."
 
 #: views/pages/page.py:184
 msgid "Page was successfully restored."

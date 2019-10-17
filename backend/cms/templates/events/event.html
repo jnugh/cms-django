@@ -98,12 +98,31 @@
                             </div>
                             <label class="mt-4 mb-2 block font-bold text-sm">{% trans 'Recurrence' %}</label>
                             <div class="checkbox-wrap relative mt-2 pl-5" style="padding-top:2px;padding-bottom:2px;padding-left: 0">
-                                    {% render_field event_form.is_recurring %} {% trans 'Recurring' %}
+                                    {% render_field event_form.is_recurring id="recurrence-rule-checkbox" %} {% trans 'Recurring' %}
                             </div>
-                            <!-- TODO: Add fields for recurrence options, make options dynamic -->
-                            <div class="checkbox-wrap relative mt-2 pl-5" style="padding-top:2px;padding-bottom:2px;padding-left:0;">
-                                {% render_field event_form.has_recurrence_end_date %} {% trans 'Recurrence ends' %}
-                            </div>
+	                        <div id="recurrence-rule"{% if not event_form.instance.is_recurring %} class="hidden"{% endif %}>
+		                        <label class="mt-4 mb-2 block font-bold text-sm">{% trans 'Frequency' %}</label>
+		                        {% render_field recurrence_rule_form.frequency id="recurrence-frequency-select" %}
+		                        <div id="recurrence-weekly"{% if not event_form.instance.frequency == 'WEEKLY' %} class="hidden"{% endif %}>
+			                        <label class="mt-4 mb-2 block font-bold text-sm">{% trans 'Weekday' %}</label>
+			                        {% render_field recurrence_rule_form.weekdays_for_weekly %}
+		                        </div>
+		                        <div id="recurrence-monthly"{% if not event_form.instance.frequency == 'MONTHLY' %} class="hidden"{% endif %}>
+			                        <label class="mt-4 mb-2 block font-bold text-sm">{% trans 'Week' %}</label>
+			                        {% render_field recurrence_rule_form.week_for_monthly %}
+			                        <label class="mt-4 mb-2 block font-bold text-sm">{% trans 'Weekday' %}</label>
+			                        {% render_field recurrence_rule_form.weekday_for_monthly %}
+		                        </div>
+		                        <label class="mt-4 mb-2 block font-bold text-sm">{% trans 'Interval' %}</label>
+		                        {% render_field recurrence_rule_form.interval %}
+		                        <div class="checkbox-wrap relative mt-2 pl-5" style="padding-top:2px;padding-bottom:2px;padding-left:0;">
+		                            {% render_field recurrence_rule_form.has_recurrence_end_date id="recurrence-end-checkbox" %} {% trans 'Recurrence ends' %}
+		                        </div>
+		                        <div id="recurrence-end"{% if not recurrence_rule_form.instance.has_recurrence_end_date %} class="hidden"{% endif %}>
+			                        <label class="mt-4 mb-2 block font-bold text-sm">{% trans 'Recurrence end date' %}</label>
+			                        {% render_field recurrence_rule_form.end_date %}
+		                        </div>
+	                        </div>
                         </div>
                     </div>
                     <!-- TODO: POIs -->
@@ -213,4 +232,38 @@
             </div>
         </div>
     </form>
+{% endblock %}
+
+{% block javascript %}
+	<script>
+        // event handler to show recurrence rule form
+        u("#recurrence-rule-checkbox").on('click', function(event){
+            if (event.target.checked) {
+                u("#recurrence-rule").removeClass('hidden');
+            } else {
+                u("#recurrence-rule").addClass('hidden');
+            }
+        });
+        // event handler to show fields for recurrence frequency
+        u("#recurrence-frequency-select").on('click', function(event){
+            if (event.target.value == 'WEEKLY') {
+                u("#recurrence-weekly").removeClass('hidden');
+                u("#recurrence-monthly").addClass('hidden');
+            } else if (event.target.value == 'MONTHLY') {
+                u("#recurrence-monthly").removeClass('hidden');
+                u("#recurrence-weekly").addClass('hidden');
+            } else {
+                u("#recurrence-weekly").addClass('hidden');
+                u("#recurrence-monthly").addClass('hidden');
+            }
+        });
+        // event handler to show recurrence end date
+        u("#recurrence-end-checkbox").on('click', function(event){
+            if (event.target.checked) {
+                u("#recurrence-end").removeClass('hidden');
+            } else {
+                u("#recurrence-end").addClass('hidden');
+            }
+        });
+    </script>
 {% endblock %}
