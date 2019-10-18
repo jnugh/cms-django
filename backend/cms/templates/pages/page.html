@@ -144,8 +144,18 @@
                         </div>
                     </div>
                     <span class="font-bold mb-2 mt-4">{% trans 'Embed live content' %}</span>
-                    <input type="text" class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded mb-2 mt-4 py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-grey"
-                           placeholder="{% trans 'Search page' %}" />
+                    <div class="relative my-2">
+                        {% render_field page_form.mirrored_page_region id="mirrored_page_region" class="block appearance-none w-full bg-grey-lighter border border-grey-lighter text-grey-darkest py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-grey" %}
+                        <div class="pointer-events-none absolute pin-y pin-r flex items-center px-2 text-grey-darkest">
+                            <img src="{% static 'svg/select-down-arrow.svg' %}" class="fill-current h-4 w-4" />
+                        </div>
+                    </div>
+                    <div class="relative my-2">
+                        {% render_field page_form.mirrored_page id="mirrored_page" class="block appearance-none w-full bg-grey-lighter border border-grey-lighter text-grey-darkest py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-grey" %}
+                        <div class="pointer-events-none absolute pin-y pin-r flex items-center px-2 text-grey-darkest">
+                            <img src="{% static 'svg/select-down-arrow.svg' %}" class="fill-current h-4 w-4" />
+                        </div>
+                    </div>
                     <div class="relative my-2 pb-2">
                         <select class="block appearance-none w-full bg-grey-lighter border border-grey-lighter text-grey-darkest py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-grey">
                             <option>{% trans 'Embed before content' %}</option>
@@ -218,26 +228,29 @@
           url = "{% url 'get_pages_list_ajax' %}";
           const data = await fetch(url, {
             method: 'POST',
-              headers:  {
-                'X-CSRFToken': u('[name=csrfmiddlewaretoken]').first().value
-              },
-              body: JSON.stringify({
-                "region": u("#mirrored_page_region").first().value,
-              })
-            }).then(res => {
-              if (res.status != 200) {
-                // return empty result if status is not ok
-                return '';
-              } else {
-                // return response text otherwise
-                return res.text();
-              }
-            });
-            if (data) {
-              // insert response into table
-              u("#mirrored_page").html(data);
+            headers:  {
+              'X-CSRFToken': u('[name=csrfmiddlewaretoken]').first().value
+            },
+            body: JSON.stringify({
+              "region": u("#mirrored_page_region").first().value,
+            })
+          }).then(res => {
+            if (res.status != 200) {
+              return '';
+            } else {
+              return res.text();
             }
-
+          });
+          if (data) {
+            u('#mirrored_page').html("<option>---</option>")
+            var data2 = JSON.parse(data)
+            for (var key in data2) {
+              console.log(key)
+              var option = document.createElement("option");
+              option.text = data2[key];
+              u('#mirrored_page').append(option);
+            }
+          }
         }
         // event handler for granting edit page permissions
         u("#grant-edit-page-permission").handle('click', grant_edit_page_permission);
