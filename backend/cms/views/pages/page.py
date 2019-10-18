@@ -13,7 +13,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.utils.translation import ugettext as _
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
@@ -451,5 +451,8 @@ def revoke_page_permission_ajax(request):
 @login_required
 @permission_required('cms.edit_pages', raise_exception=True)
 def get_pages_list_ajax(request):
+    data = json.loads(request.body.decode('utf-8'))
+    print(data)
+    return JsonResponse({'foo':'bar'})
     pass
     # get all pages for region

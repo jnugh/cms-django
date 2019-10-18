@@ -212,6 +212,35 @@
 
 {% block javascript %}
     <script>
+        // mirror page region select handling
+        u("#mirrored_page_region").handle('change', update_mirrored_pages_list)
+        async function update_mirrored_pages_list(e){
+          url = "{% url 'get_pages_list_ajax' %}";
+         
+          const data = await fetch(url, {
+            method: 'POST',
+              headers:  {
+                'X-CSRFToken': u('[name=csrfmiddlewaretoken]').first().value
+              },
+              body: JSON.stringify({
+                "foo": "baz",
+                "region": u("#mirrored_page_region").value,
+              })
+            }).then(res => {
+              if (res.status != 200) {
+                // return empty result if status is not ok
+                return '';
+              } else {
+                // return response text otherwise
+                return res.text();
+              }
+            });
+            if (data) {
+              // insert response into table
+              u("#mirrored_page").html(data);
+            }
+
+        }
         // event handler for granting edit page permissions
         u("#grant-edit-page-permission").handle('click', grant_edit_page_permission);
         // wrapper function for granting edit page permissions
