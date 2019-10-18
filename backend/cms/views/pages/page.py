@@ -9,6 +9,7 @@ import json
 import logging
 
 from django.core.exceptions import PermissionDenied
+from django.core import serializers
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import get_user_model
@@ -451,8 +452,9 @@ def revoke_page_permission_ajax(request):
 @login_required
 @permission_required('cms.edit_pages', raise_exception=True)
 def get_pages_list_ajax(request):
-    data = json.loads(request.body.decode('utf-8'))
-    print(data)
-    return JsonResponse({'foo':'bar'})
-    pass
-    # get all pages for region
+    region_id = json.loads(request.body.decode('utf-8'))['region']
+    pages = Page.objects.filter(region__id=region_id)
+    result = {}
+    for page in pages:
+        result[page.id] = page.page_translations.first().title
+    return JsonResponse(result)

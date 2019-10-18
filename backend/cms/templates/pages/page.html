@@ -216,15 +216,13 @@
         u("#mirrored_page_region").handle('change', update_mirrored_pages_list)
         async function update_mirrored_pages_list(e){
           url = "{% url 'get_pages_list_ajax' %}";
-         
           const data = await fetch(url, {
             method: 'POST',
               headers:  {
                 'X-CSRFToken': u('[name=csrfmiddlewaretoken]').first().value
               },
               body: JSON.stringify({
-                "foo": "baz",
-                "region": u("#mirrored_page_region").value,
+                "region": u("#mirrored_page_region").first().value,
               })
             }).then(res => {
               if (res.status != 200) {
