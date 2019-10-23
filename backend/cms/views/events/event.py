@@ -34,33 +34,12 @@ class EventView(PermissionRequiredMixin, TemplateView):
             language=language
         ).first()
 
-        # differentiate between not None and None cases because initial value calculation fails with None instance
-        if recurrence_rule_instance is not None:
-            recurrence_rule_form = RecurrenceRuleForm(
-                instance=recurrence_rule_instance,
-                initial={
-                    'has_recurrence_end_date': recurrence_rule_instance.end_date is not None
-                }
-            )
-        else:
-            recurrence_rule_form = RecurrenceRuleForm(
-                instance=recurrence_rule_instance
-            )
-
-        # differentiate between not None and None cases because initial value calculation fails with None instance
-        if event_instance is not None:
-            event_form = EventForm(
-                instance=event_instance,
-                initial={
-                    'is_all_day': event_instance.start_time == time.min and event_instance.end_time == time.max,
-                    'is_recurring': event_instance.recurrence_rule is not None
-                }
-            )
-        else:
-            event_form = EventForm(
-                instance=event_instance
-            )
-
+        recurrence_rule_form = RecurrenceRuleForm(
+            instance=recurrence_rule_instance
+        )
+        event_form = EventForm(
+            instance=event_instance
+        )
         event_translation_form = EventTranslationForm(
             instance=event_translation_instance
         )

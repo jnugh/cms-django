@@ -120,7 +120,7 @@
 		                        </div>
 		                        <div id="recurrence-end"{% if not recurrence_rule_form.instance.has_recurrence_end_date %} class="hidden"{% endif %}>
 			                        <label class="mt-4 mb-2 block font-bold text-sm">{% trans 'Recurrence end date' %}</label>
-			                        {% render_field recurrence_rule_form.end_date %}
+			                        {% render_field recurrence_rule_form.recurrence_end_date %}
 		                        </div>
 	                        </div>
                         </div>

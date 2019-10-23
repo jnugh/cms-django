@@ -22,10 +22,10 @@ class RecurrenceRuleForm(forms.ModelForm):
             'weekdays_for_weekly',
             'weekday_for_monthly',
             'week_for_monthly',
-            'end_date',
+            'recurrence_end_date',
         ]
         widgets = {
-            'end_date': forms.DateInput(format=['%d.%m.%Y']),
+            'recurrence_end_date': forms.DateInput(format=['%d.%m.%Y']),
             'weekdays_for_weekly': forms.CheckboxSelectMultiple(
                 choices=RecurrenceRule.WEEKDAYS
             ),
@@ -36,6 +36,18 @@ class RecurrenceRuleForm(forms.ModelForm):
                 choices=[(1, '1.'), (2, '2.'), (3, '3.'), (4, '4.'), (5, '5.')]
             )
         }
+
+    # pylint: disable=arguments-differ
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance', None)
+        if instance is not None:
+            # Initialize BooleanField based on RecurrenceRule properties
+            initial = kwargs.get('initial', {})
+            kwargs['initial'] = {**initial,
+                                 'has_recurrence_end_date': instance.has_recurrence_end_date
+                                 }
+        # Instantiate ModelForm
+        super(RecurrenceRuleForm, self).__init__(*args, **kwargs)
 
     # pylint: disable=arguments-differ
     def save(self, *args, **kwargs):
@@ -80,6 +92,19 @@ class EventForm(forms.ModelForm):
             'start_time': forms.TimeInput(format='%H:%M'),
             'end_time': forms.TimeInput(format='%H:%M'),
         }
+
+    # pylint: disable=arguments-differ
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance', None)
+        if instance is not None:
+            # Initialize BooleanFields based on Event properties
+            initial = kwargs.get('initial', {})
+            kwargs['initial'] = {**initial,
+                                 'is_all_day': instance.is_all_day,
+                                 'is_recurring': instance.is_recurring
+                                 }
+        # Instantiate ModelForm
+        super(EventForm, self).__init__(*args, **kwargs)
 
     # pylint: disable=arguments-differ
     def save(self, *args, **kwargs):

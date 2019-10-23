@@ -98,11 +98,15 @@ class RecurrenceRule(models.Model):
         null=True,
         validators=[MinValueValidator(-5), MaxValueValidator(5)]
     )
-    end_date = models.DateField(null=True, default=None)
+    recurrence_end_date = models.DateField(null=True, default=None)
+
+    @property
+    def has_recurrence_end_date(self):
+        return self.recurrence_end_date is not None
 
     def clean(self):
         if self.frequency == RecurrenceRule.WEEKLY \
-                and (self.weekdays_for_weekly is None or self.weekdays_for_weekly.size() == 0):
+                and (self.weekdays_for_weekly is None or len(self.weekdays_for_weekly) == 0):
             raise ValidationError('No weekdays selected for weekly recurrence')
         if self.frequency == 'monthly' and (
                 self.weekday_for_monthly is None or self.week_for_monthly is None):
@@ -113,7 +117,7 @@ class Event(models.Model):
     """Database object representing an event with name, date and the option to add recurrency.
 
     Args:
-        models : Databas model inherit from the standard django models
+        models : Database model inherit from the standard django models
 
     Raises:
         ValidationError: Raised if the recurrence end date is after the start date
@@ -133,8 +137,8 @@ class Event(models.Model):
     def clean(self):
         if self.start_date is None or self.end_date is None:
             raise ValidationError(_('Start date and end date mustn\'t be empty'), code='required')
-        if self.recurrence_rule:
-            if self.recurrence_rule.end_date <= self.start_date:
+        if self.recurrence_rule is not None and self.recurrence_rule.recurrence_end_date is not None:
+            if self.recurrence_rule.recurrence_end_date <= self.start_date:
                 raise ValidationError(_('Recurrence end date has to be after the event\'s start date'), code='invalid')
         if (self.start_time is None) ^ (self.end_time is None):
             raise ValidationError(_('Start time and end time must either be both empty or both filled out'), code='invalid')
@@ -149,6 +153,14 @@ class Event(models.Model):
         for event_translation in event_translations:
             languages.append(event_translation.language)
         return languages
+
+    @property
+    def is_recurring(self):
+        return self.recurrence_rule is not None
+
+    @property
+    def is_all_day(self):
+        return self.start_time == time.min and self.end_time == time.max
 
     def get_translation(self, language_code):
         """Provides a translation of the Event
@@ -192,7 +204,7 @@ class Event(models.Model):
         event_end = datetime.combine(self.end_date, self.end_time if self.end_time else time.max)
         event_span = event_end - event_start
         recurrence = self.recurrence_rule
-        if recurrence:
+        if recurrence is not None:
             until = min(end, datetime.combine(recurrence.end_date
                                               if recurrence.end_date
                                               else date.max, time.max))
