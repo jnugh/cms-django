@@ -63,7 +63,7 @@ class EventView(PermissionRequiredMixin, TemplateView):
         recurrence_rule_instance = RecurrenceRule.objects.filter(event=event_instance).first()
         event_translation_instance = EventTranslation.objects.filter(
             event=event_instance,
-            language=language,
+            language=language
         ).first()
 
         recurrence_rule_form = RecurrenceRuleForm(

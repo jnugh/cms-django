@@ -5,6 +5,7 @@ Form for creating or saving event objects and their corresponding event translat
 from datetime import time
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
 from ..utils.slug_utils import generate_unique_slug
@@ -25,7 +26,7 @@ class RecurrenceRuleForm(forms.ModelForm):
             'recurrence_end_date',
         ]
         widgets = {
-            'recurrence_end_date': forms.DateInput(format=['%d.%m.%Y']),
+            'recurrence_end_date': forms.DateInput(format='%d.%m.%Y'),
             'weekdays_for_weekly': forms.CheckboxSelectMultiple(
                 choices=RecurrenceRule.WEEKDAYS
             ),
@@ -44,29 +45,22 @@ class RecurrenceRuleForm(forms.ModelForm):
             # Initialize BooleanField based on RecurrenceRule properties
             initial = kwargs.get('initial', {})
             kwargs['initial'] = {**initial,
-                                 'has_recurrence_end_date': instance.has_recurrence_end_date
+                                 'has_recurrence_end_date': instance.has_recurrence_end_date,
+                                 # Tuple conversion is necessary for CheckboxSelectMultiple widget
+                                 'weekdays_for_weekly': tuple(instance.weekdays_for_weekly)
                                  }
         # Instantiate ModelForm
         super(RecurrenceRuleForm, self).__init__(*args, **kwargs)
 
-    # pylint: disable=arguments-differ
-    def save(self, *args, **kwargs):
+    def clean(self):
+        cleaned_data = super(RecurrenceRuleForm, self).clean()
 
-        # pop kwargs to prevent error when calling super class
-        event = kwargs.pop('event', None)
-        if self.instance.id is None:
-            # disable instant commit on saving because missing information would cause error
-            kwargs['commit'] = False
+        if not cleaned_data['has_recurrence_end_date']:
+            cleaned_data['recurrence_end_date'] = None
+        elif cleaned_data['recurrence_end_date'] is None:
+            raise ValidationError(_('No recurrence end date selected'))
 
-        recurrence_rule = super(RecurrenceRuleForm, self).save(*args, **kwargs)
-
-        if self.instance.id is None:
-            # set initial values for new events
-            recurrence_rule.event = event
-
-        # finally save recurrence_rule to database
-        recurrence_rule.save()
-        return recurrence_rule
+        return cleaned_data
 
 
 class EventForm(forms.ModelForm):
@@ -112,7 +106,6 @@ class EventForm(forms.ModelForm):
         region = kwargs.pop('region', None)
         recurrence_rule = kwargs.pop('recurrence_rule', None)
 
-
         if self.instance.id is None:
             # disable instant commit on saving because missing information would cause errors
             kwargs['commit'] = False
@@ -122,8 +115,8 @@ class EventForm(forms.ModelForm):
         if self.instance.id is None:
             # set initial values on event creation
             event.region = region
-            event.recurrence_rule = recurrence_rule
 
+        event.recurrence_rule = recurrence_rule
         event.save()
         return event
 

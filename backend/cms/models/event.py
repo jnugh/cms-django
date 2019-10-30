@@ -87,18 +87,19 @@ class RecurrenceRule(models.Model):
         (DECEMBER, 'Dezember')
     )
 
-    frequency = models.CharField(max_length=7, choices=FREQUENCY)
-    interval = models.IntegerField(default=1, validators=[MinValueValidator(1)])
+    frequency = models.CharField(max_length=7, choices=FREQUENCY, blank=True)
+    interval = models.IntegerField(default=1, validators=[MinValueValidator(1)], blank=True)
     weekdays_for_weekly = ArrayField(
         models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(6)]),
-        null=True
+        null=True, blank=True
     )
-    weekday_for_monthly = models.IntegerField(null=True)
+    weekday_for_monthly = models.IntegerField(null=True, blank=True)
     week_for_monthly = models.IntegerField(
         null=True,
-        validators=[MinValueValidator(-5), MaxValueValidator(5)]
+        validators=[MinValueValidator(-5), MaxValueValidator(5)],
+        blank = True
     )
-    recurrence_end_date = models.DateField(null=True, default=None)
+    recurrence_end_date = models.DateField(null=True, default=None, blank=True)
 
     @property
     def has_recurrence_end_date(self):
@@ -107,10 +108,10 @@ class RecurrenceRule(models.Model):
     def clean(self):
         if self.frequency == RecurrenceRule.WEEKLY \
                 and (self.weekdays_for_weekly is None or len(self.weekdays_for_weekly) == 0):
-            raise ValidationError('No weekdays selected for weekly recurrence')
+            raise ValidationError(_('No weekdays selected for weekly recurrence'))
         if self.frequency == 'monthly' and (
                 self.weekday_for_monthly is None or self.week_for_monthly is None):
-            raise ValidationError('No weekday or no week selected for monthly recurrence')
+            raise ValidationError(_('No weekday or no week selected for monthly recurrence'))
 
 
 class Event(models.Model):
@@ -205,8 +206,8 @@ class Event(models.Model):
         event_span = event_end - event_start
         recurrence = self.recurrence_rule
         if recurrence is not None:
-            until = min(end, datetime.combine(recurrence.end_date
-                                              if recurrence.end_date
+            until = min(end, datetime.combine(recurrence.recurrence_end_date
+                                              if recurrence.recurrence_end_date
                                               else date.max, time.max))
             if recurrence.frequency in (RecurrenceRule.DAILY, RecurrenceRule.YEARLY):
                 occurrences = rrule(recurrence.frequency,
