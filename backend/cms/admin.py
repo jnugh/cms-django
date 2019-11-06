@@ -4,8 +4,6 @@ File routing to the admin region
 
 
 from django.contrib import admin
-
-from cms.models import Configuration
 from .models import Region
 from .models import Language
 from .models import LanguageTreeNode
@@ -14,6 +12,8 @@ from .models import PageTranslation
 from .models import POI
 from .models import POITranslation
 from .models import Organization
+from .models import Extra
+from .models import ExtraTemplate
 
 admin.site.register(Region)
 admin.site.register(Language)
@@ -23,4 +23,5 @@ admin.site.register(PageTranslation)
 admin.site.register(POI)
 admin.site.register(POITranslation)
 admin.site.register(Organization)
-admin.site.register(Configuration)
+admin.site.register(Extra)
+admin.site.register(ExtraTemplate)

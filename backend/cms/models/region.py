@@ -23,7 +23,7 @@ class Region(models.Model):
     )
 
     name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
     status = models.CharField(max_length=4, choices=STATUS)
 
     events_enabled = models.BooleanField(default=True)
@@ -56,7 +56,8 @@ class Region(models.Model):
 
     @classmethod
     def get_current_region(cls, request):
-        if not hasattr(request, 'resolver_match'):
+        # if rendered url is edit_region, the region slug originates from the region form.
+        if not hasattr(request, 'resolver_match') or request.resolver_match.url_name == 'edit_region':
             return None
         region_slug = request.resolver_match.kwargs.get('region_slug')
         if not region_slug:

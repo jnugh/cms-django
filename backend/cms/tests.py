@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from .models import Region
 from .models import Page
 from .models import Language
+from .models import PageTranslation
 from .views.regions.region_form import RegionForm
 from .views.pages.page_form import PageForm
 from .views.languages.language_form import LanguageForm
@@ -24,14 +25,14 @@ class SetupClass(TestCase):
     def create_region(region_data):
         region_form = RegionForm(region_data)
         region_form.is_valid()
-        region_form.save_region()
+        region_form.save()
         return Region.objects.get(slug=region_data['name'])
 
     @staticmethod
     def create_language(language_data):
         language_form = LanguageForm(language_data)
         language_form.is_valid()
-        language_form.save_language()
+        language_form.save()
         return Language.objects.get(name=language_data['name'])
 
     @staticmethod
@@ -128,7 +129,7 @@ class SetupClass(TestCase):
                         2019-04-05 11:53:44
                     </div>
                 ''',
-                'status': 'reviewed',
+                'status': PageTranslation.REVIEW_FINISHED,
                 'position': POSITION_CHOICES[0][0],
                 'parent': None,
                 'icon': None,
@@ -150,7 +151,7 @@ class SetupClass(TestCase):
                     <a href="http://tunewsinternational.com/">TüNews INTERNATIONAL</a> 
                     - 2019-04-05 11:53:44
                 </div>''',
-                'status': 'reviewed',
+                'status': PageTranslation.REVIEW_FINISHED,
                 'position': POSITION_CHOICES[0][0],
                 'parent': self.page_tunews.id,
                 'icon': None,
@@ -166,7 +167,7 @@ class SetupClass(TestCase):
             page_data={
                 'title': 'Schlitz1',
                 'text': 'zweite Schicht Schlitz eins',
-                'status': 'reviewed',
+                'status': PageTranslation.REVIEW_FINISHED,
                 'position': POSITION_CHOICES[0][0],
                 'parent': self.page_tunews.id,
                 'icon': None,
@@ -183,7 +184,7 @@ class SetupClass(TestCase):
             page_data={
                 'title': 'Slot2',
                 'text': 'second layer slot two',
-                'status': 'reviewed',
+                'status': PageTranslation.REVIEW_FINISHED,
                 'position': POSITION_CHOICES[1][0],
                 'parent': self.page_tunews.id,
                 'icon': None,
@@ -199,7 +200,7 @@ class SetupClass(TestCase):
             page_data={
                 'title': 'Tunews two',
                 'text': 'first layer',
-                'status': 'reviewed',
+                'status': PageTranslation.REVIEW_FINISHED,
                 'position': POSITION_CHOICES[0][0],
                 'parent': None,
                 'icon': None,
