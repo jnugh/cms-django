@@ -62,6 +62,26 @@ class RecurrenceRuleForm(forms.ModelForm):
 
         return cleaned_data
 
+    def has_changed(self):
+        # Handle weekdays_for_weekly data separately from the other data because has_changed doesn't work
+        # with CheckboxSelectMultiple widgets and ArrayFields out of the box
+        try:
+            # Have to remove the corresponding field name from self.changed_data
+            self.changed_data.remove('weekdays_for_weekly')
+        except ValueError:
+            return super(RecurrenceRuleForm, self).has_changed()
+
+        value = self.fields['weekdays_for_weekly'].widget.value_from_datadict(self.data, self.files, self.add_prefix('weekdays_for_weekly'))
+        initial = self['weekdays_for_weekly'].initial
+        value_list = list(value) if value is not None else None
+        initial_list = list(initial) if initial is not None else None
+        # Sort the lists because they could have the same content in a different order
+        value_list.sort()
+        initial_list.sort()
+        if self.fields['weekdays_for_weekly'].has_changed(initial_list, value_list):
+            self.changed_data.append('weekdays_for_weekly')
+        return bool(self.changed_data)
+
 
 class EventForm(forms.ModelForm):
     """
@@ -116,6 +136,9 @@ class EventForm(forms.ModelForm):
             # set initial values on event creation
             event.region = region
 
+        if recurrence_rule is None and event.recurrence_rule is not None:
+            # Delete old recurrence rule from database in order to not spam the database with unused objects
+            event.recurrence_rule.delete()
         event.recurrence_rule = recurrence_rule
         event.save()
         return event
@@ -130,6 +153,18 @@ class EventForm(forms.ModelForm):
             cleaned_data['end_time'] = time.max
 
         return cleaned_data
+
+    def has_changed(self):
+        # If is_all_day is set, the initial value for end_time is 23:59 but the new value is 23:59:59
+        # because of how the widget is set. This results in end_time always being in self.changed data.
+        # Therefore ignore changes to end_time if the event initially was all day long and still is.
+        if self.fields['is_all_day'].widget.value_from_datadict(self.data, self.files, self.add_prefix('is_all_day')) \
+            and self['is_all_day'].initial:
+            try:
+                self.changed_data.remove('end_time')
+            except ValueError:
+                pass
+        return super(EventForm, self).has_changed()
 
 
 class EventTranslationForm(forms.ModelForm):

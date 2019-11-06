@@ -100,7 +100,7 @@
                             <div class="checkbox-wrap relative mt-2 pl-5" style="padding-top:2px;padding-bottom:2px;padding-left: 0">
                                     {% render_field event_form.is_recurring id="recurrence-rule-checkbox" %} {% trans 'Recurring' %}
                             </div>
-	                        <div id="recurrence-rule"{% if not event_form.instance.is_recurring %} class="hidden"{% endif %}>
+	                        <div id="recurrence-rule"{% if not event_form.is_recurring.value %} class="hidden"{% endif %}>
 		                        <label class="mt-4 mb-2 block font-bold text-sm">{% trans 'Frequency' %}</label>
 		                        {% render_field recurrence_rule_form.frequency id="recurrence-frequency-select" %}
 		                        <div id="recurrence-weekly"{% if not recurrence_rule_form.instance.frequency == 'WEEKLY' %} class="hidden"{% endif %}>

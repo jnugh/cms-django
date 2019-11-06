@@ -97,7 +97,7 @@ class RecurrenceRule(models.Model):
     week_for_monthly = models.IntegerField(
         null=True,
         validators=[MinValueValidator(-5), MaxValueValidator(5)],
-        blank = True
+        blank=True
     )
     recurrence_end_date = models.DateField(null=True, default=None, blank=True)
 
@@ -107,7 +107,7 @@ class RecurrenceRule(models.Model):
 
     def clean(self):
         if self.frequency == RecurrenceRule.WEEKLY \
-                and (self.weekdays_for_weekly is None or len(self.weekdays_for_weekly) == 0):
+                and (self.weekdays_for_weekly is None or not self.weekdays_for_weekly):
             raise ValidationError(_('No weekdays selected for weekly recurrence'))
         if self.frequency == 'monthly' and (
                 self.weekday_for_monthly is None or self.week_for_monthly is None):
@@ -189,7 +189,7 @@ class Event(models.Model):
             'event_translations'
         ).filter(
             region__slug=region_slug
-        )
+        ).order_by('id')
         return events
 
     def get_occurrences(self, start, end):

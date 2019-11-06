@@ -1,5 +1,3 @@
-from datetime import time
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -82,12 +80,12 @@ class EventView(PermissionRequiredMixin, TemplateView):
         )
         # TODO: error handling
         if (
-            event_form.is_valid() and
-            event_translation_form.is_valid() and
-            (
-                recurrence_rule_form.is_valid() or
-                not event_form.cleaned_data['is_recurring']
-            )
+                event_form.is_valid() and
+                event_translation_form.is_valid() and
+                (
+                    recurrence_rule_form.is_valid() or
+                    not event_form.cleaned_data['is_recurring']
+                )
         ):
 
             if event_form.cleaned_data['is_recurring']:
@@ -104,7 +102,7 @@ class EventView(PermissionRequiredMixin, TemplateView):
                 user=request.user
             )
 
-            if event_form.has_changed() or event_translation_form.has_changed():
+            if event_form.has_changed() or event_translation_form.has_changed() or recurrence_rule_form.has_changed():
                 published = event_translation.public \
                             and 'public' in event_translation_form.changed_data
                 if not event_instance:
