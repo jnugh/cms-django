@@ -1,5 +1,4 @@
 from django.test import TestCase
-from cms.models.page import PageTranslation
 
 
 class PageTranslation(TestCase):
