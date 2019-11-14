@@ -16,9 +16,11 @@ pipeline {
         }
         stage('Unit Testing') {
           steps {
+            sh './dev-tools/run.sh'
+            sh './dev-tools/test.sh'
             // sh 'source .venv/bin/activate'
             // sh 'export DJANGO_SETTINGS_MODULE=backend.docker_settings'
-            sh '. .venv/bin/activate && integreat-cms test cms'
+            // sh '. .venv/bin/activate && integreat-cms test cms'
           }
         }
       }
