@@ -2,10 +2,12 @@ pipeline {
   agent any
 
   stages {
-    stage('Test') {
+    stage('Installation') {
       steps {
         sh './dev-tools/install.sh'
       }
+    }
+    stage('Testing') {
       parallel {
         stage('Linting') {
           steps {
