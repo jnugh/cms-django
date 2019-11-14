@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   stages {
-    stage('Test') {
+    /*stage('Test') {
       parallel {
         stage('Linting') {
           steps {
@@ -10,12 +10,18 @@ pipeline {
             sh '. .venv/bin/activate && cd backend && pylint_runner'
           }
         }
-        /*stage('Unit Testing') {
+        stage('Unit Testing') {
           steps {
             sh './dev-tools/install.sh'
             sh './dev-tools/test.sh'
           }
-        }*/
+        }
+      }
+    }*/
+    stage('Linting') {
+      steps {
+        sh './dev-tools/install.sh'
+        sh '. .venv/bin/activate && cd backend && pylint_runner'
       }
     }
     stage('Packaging') {
