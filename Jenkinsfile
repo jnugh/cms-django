@@ -19,7 +19,7 @@ pipeline {
             sh '. .venv/bin/activate && cd backend && pylint_runner'
           }
         }
-        stage('Unit Testing') {
+        stage('Test Cases') {
           steps {
             withCredentials([usernamePassword(credentialsId: 'cms_django_database', passwordVariable: 'CMS_DJANGO_DATABASE_PASSWORD', usernameVariable: 'CMS_DJANGO_DATABASE_USER')]) {
                 sh '. .venv/bin/activate && integreat-cms makemigrations cms && integreat-cms migrate'
