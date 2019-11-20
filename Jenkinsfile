@@ -22,7 +22,7 @@ pipeline {
         stage('Unit Testing') {
           steps {
             withCredentials([usernamePassword(credentialsId: 'cms_django_database', passwordVariable: 'CMS_DJANGO_DATABASE_PASSWORD', usernameVariable: 'CMS_DJANGO_DATABASE_USER')]) {
-                sh './dev-tools/migrate.sh'
+                sh '. .venv/bin/activate && integreat-cms makemigrations cms && integreat-cms migrate'
                 sh '. .venv/bin/activate && integreat-cms test cms'
             }
           }
