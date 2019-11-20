@@ -21,5 +21,8 @@ DATABASES = {
         'PASSWORD': get_env_value('CMS_DJANGO_DATABASE_PASSWORD'),
         'HOST': 'localhost',
         'PORT': '3333',
+        'TEST': {
+            'NAME': 'jenkinsremote_test',
+        },
     }
 }
