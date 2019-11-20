@@ -3,6 +3,7 @@ pipeline {
 
   environment {
     DJANGO_SETTINGS_MODULE = 'backend.jenkins_settings'
+
   }
 
   stages {
@@ -21,6 +22,7 @@ pipeline {
         stage('Unit Testing') {
           steps {
             withCredentials([usernamePassword(credentialsId: 'cms_django_database', passwordVariable: 'CMS_DJANGO_DATABASE_PASSWORD', usernameVariable: 'CMS_DJANGO_DATABASE_USER')]) {
+                sh './dev-tools/migrate.sh'
                 sh '. .venv/bin/activate && integreat-cms test cms'
             }
           }
