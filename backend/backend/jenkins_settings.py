@@ -16,13 +16,13 @@ def get_env_value(env_variable):
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'jenkinsremote',
+        'NAME': 'djangojenkins',
         'USER': get_env_value('CMS_DJANGO_DATABASE_USER'),
         'PASSWORD': get_env_value('CMS_DJANGO_DATABASE_PASSWORD'),
         'HOST': 'localhost',
         'PORT': '3333',
         'TEST': {
-            'NAME': 'jenkinsremote_test',
+            'NAME': 'djangojenkins_test',
         },
     }
 }
