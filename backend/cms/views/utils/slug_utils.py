@@ -1,5 +1,7 @@
 from django.utils.text import slugify
 
+from ...models import Page, Event
+
 
 def generate_unique_slug(form_object_instance, foreign_model=None):
 
@@ -24,6 +26,10 @@ def generate_unique_slug(form_object_instance, foreign_model=None):
 
     # if the foreign model is a content type (e.g. page or event), make sure slug is unique per region and language
     if foreign_model:
+        try:
+            foreign_instance = getattr(form_object_instance.instance, foreign_model)
+        except (Page.DoesNotExist, Event.DoesNotExist):
+            return slug
         pre_filtered_objects = pre_filtered_objects.filter(**{
             foreign_model + '__region': form_object_instance.region,
             'language': form_object_instance.language
@@ -35,10 +41,10 @@ def generate_unique_slug(form_object_instance, foreign_model=None):
             slug=unique_slug
         )
         if foreign_model:
-            other_object = other_object.exclude(
-                page=form_object_instance.instance.page,
-                language=form_object_instance.instance.language
-            )
+            other_object = other_object.exclude(**{
+                foreign_model: foreign_instance,
+                'language': form_object_instance.instance.language
+            })
         else:
             other_object = other_object.exclude(
                 id=form_object_instance.instance.id,

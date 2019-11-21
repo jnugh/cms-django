@@ -232,6 +232,16 @@ urlpatterns = [
                         name='edit_event'
                     ),
                     url(
+                        r'^archive$',
+                        events.EventView.as_view(),
+                        name='archive_event'
+                    ),
+                    url(
+                        r'^restore$',
+                        events.EventView.as_view(),
+                        name='restore_event'
+                    ),
+                    url(
                         r'^delete$',
                         events.EventView.as_view(),
                         name='delete_event'
