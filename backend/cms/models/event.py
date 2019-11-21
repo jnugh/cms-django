@@ -30,32 +30,38 @@ class RecurrenceRule(models.Model):
         from 0 to 6 or when the value of weekdays_for_monthly isn't between -5 and 5.
     """
 
-    frequency = models.CharField(max_length=7, choices=frequency.CHOICES)
-    interval = models.IntegerField(default=1, validators=[MinValueValidator(1)])
+    frequency = models.CharField(max_length=7, choices=frequency.CHOICES, blank=True)
+    interval = models.IntegerField(default=1, validators=[MinValueValidator(1)], blank=True)
     weekdays_for_weekly = ArrayField(
         models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(6)]),
-        null=True)
-    weekday_for_monthly = models.IntegerField(null=True)
+        null=True, blank=True
+    )
+    weekday_for_monthly = models.IntegerField(null=True, blank=True)
     week_for_monthly = models.IntegerField(
         null=True,
-        validators=[MinValueValidator(-5), MaxValueValidator(5)]
+        validators=[MinValueValidator(-5), MaxValueValidator(5)],
+        blank=True
     )
-    end_date = models.DateField(null=True, default=None)
+    recurrence_end_date = models.DateField(null=True, default=None, blank=True)
+
+    @property
+    def has_recurrence_end_date(self):
+        return self.recurrence_end_date is not None
 
     def clean(self):
         if self.frequency == frequency.WEEKLY \
-                and (self.weekdays_for_weekly is None or self.weekdays_for_weekly.size() == 0):
+                and (self.weekdays_for_weekly is None or not self.weekdays_for_weekly):
             raise ValidationError('No weekdays selected for weekly recurrence')
         if self.frequency == 'monthly' and (
                 self.weekday_for_monthly is None or self.week_for_monthly is None):
-            raise ValidationError('No weekday or no week selected for monthly recurrence')
+            raise ValidationError(_('No weekday or no week selected for monthly recurrence'))
 
 
 class Event(models.Model):
     """Database object representing an event with name, date and the option to add recurrency.
 
     Args:
-        models : Databas model inherit from the standard django models
+        models : Database model inherit from the standard django models
 
     Raises:
         ValidationError: Raised if the recurrence end date is after the start date
@@ -66,48 +72,67 @@ class Event(models.Model):
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     location = models.ForeignKey(POI, on_delete=models.PROTECT, null=True, blank=True)
     start_date = models.DateField()
-    start_time = models.TimeField(null=True)
+    start_time = models.TimeField(blank=True)
     end_date = models.DateField()
-    end_time = models.TimeField(null=True)
+    end_time = models.TimeField(blank=True)
     recurrence_rule = models.OneToOneField(RecurrenceRule, null=True, on_delete=models.SET_NULL)
     picture = models.ImageField(null=True, blank=True, upload_to='events/%Y/%m/%d')
 
     def clean(self):
-        if self.recurrence_rule:
-            if self.recurrence_rule.end_date <= self.start_date:
-                raise ValidationError('recurrence end date must be after the start date!')
-        if self.start_time is None ^ self.end_time is None:
-            raise ValidationError(
-                'start_time and end_time must either be both null or both non-null')
+        if self.start_date is None or self.end_date is None:
+            raise ValidationError(_('Start date and end date mustn\'t be empty'), code='required')
+        if self.recurrence_rule is not None and self.recurrence_rule.recurrence_end_date is not None:
+            if self.recurrence_rule.recurrence_end_date <= self.start_date:
+                raise ValidationError(_('Recurrence end date has to be after the event\'s start date'), code='invalid')
+        if (self.start_time is None) ^ (self.end_time is None):
+            raise ValidationError(_('Start time and end time must either be both empty or both filled out'), code='invalid')
         if self.end_date < self.start_date or (
                 self.end_date == self.start_date and self.end_time < self.start_time):
-            raise ValidationError('end datetime mustn\'t be before start datetime')
+            raise ValidationError(_('The end of the event can\'t be before the start of the event'), code='invalid')
 
-    def __str__(self):
-        return self.event_translations.filter(event_id=self.id, language='de').first().title
+    @property
+    def languages(self):
+        event_translations = self.event_translations.prefetch_related('language').all()
+        languages = []
+        for event_translation in event_translations:
+            languages.append(event_translation.language)
+        return languages
 
-    def get_translations(self):
-        """Provides all translations of the Event
+    @property
+    def is_recurring(self):
+        return self.recurrence_rule is not None
+
+    @property
+    def is_all_day(self):
+        return self.start_time == time.min and self.end_time == time.max
+
+    def get_translation(self, language_code):
+        """Provides a translation of the Event
         Returns:
-            [event_translations]: Array with all translations related to this event
+            event_translation: Translation of this event
         """
-
-        return self.event_translations.all()
+        try:
+            event_translation = self.event_translations.get(language__code=language_code)
+        except ObjectDoesNotExist:
+            event_translation = None
+        return event_translation
 
     @classmethod
-    def get_list_view(cls):
+    def get_list(cls, region_slug):
         """
         Function: Get List View
+
+        Args:
+            region_slug: slug of the region the event belongs to
+
         Returns:
             [events]: Array of all Events
         """
-
-        event_translations = EventTranslation.objects.filter(
-            language='de'
-        ).select_related('creator')
         events = cls.objects.all().prefetch_related(
-            models.Prefetch('event_translations', queryset=event_translations)
-        ).filter(event_translations__language='de')
+            'translations'
+        ).filter(
+            region__slug=region_slug
+        ).order_by('id')
         return events
 
     def get_occurrences(self, start, end):
@@ -123,9 +148,9 @@ class Event(models.Model):
         event_end = datetime.combine(self.end_date, self.end_time if self.end_time else time.max)
         event_span = event_end - event_start
         recurrence = self.recurrence_rule
-        if recurrence:
-            until = min(end, datetime.combine(recurrence.end_date
-                                              if recurrence.end_date
+        if recurrence is not None:
+            until = min(end, datetime.combine(recurrence.recurrence_end_date
+                                              if recurrence.recurrence_end_date
                                               else date.max, time.max))
             if recurrence.frequency in (frequency.DAILY, frequency.YEARLY):
                 occurrences = rrule(recurrence.frequency,
@@ -153,27 +178,41 @@ class Event(models.Model):
         permissions = (
             ('view_events', 'Can view events'),
             ('edit_events', 'Can edit events'),
-            ('publish_events', 'Can publish events'),
+            ('publish_events', 'Can publish events')
         )
 
 
 class EventTranslation(models.Model):
     """
-    Database object representing an event tranlsation
+    Database object representing an event translation
     """
 
     event = models.ForeignKey(Event, related_name='translations', on_delete=models.CASCADE)
+    slug = models.SlugField(max_length=200, blank=True, allow_unicode=True)
     status = models.CharField(max_length=6, choices=status.CHOICES, default=status.DRAFT)
     title = models.CharField(max_length=250)
     description = models.TextField()
-    permalink = models.CharField(max_length=60)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
+    language = models.ForeignKey(
+        Language,
+        related_name='event_translations',
+        on_delete=models.CASCADE
+    )
+    currently_in_translation = models.BooleanField(default=False)
     version = models.PositiveIntegerField(default=0)
     minor_edit = models.BooleanField(default=False)
-    public = models.BooleanField(default=False)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created_date = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+
+    @property
+    def permalink(self):
+        return self.event.region.slug + '/' \
+               + self.language.code + '/' \
+               + self.slug + '/'
+
+    def __str__(self):
+        return self.title
 
     class Meta:
+        ordering = ['event', '-version']
         default_permissions = ()
