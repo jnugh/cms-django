@@ -4,8 +4,8 @@ Handling of login, logout and password reset functionality.
 from django.contrib import messages
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth import views as auth_views
-from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext as _
 from django.urls import reverse
 
 
