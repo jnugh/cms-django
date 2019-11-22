@@ -18,7 +18,7 @@ setup(
     install_requires=[
         "beautifulsoup4",
         "cffi",
-        "Django==2.2.4",
+        "Django==2.2.7",
         "django-filer",
         "django-mptt",
         "django-widget-tweaks",
@@ -26,7 +26,6 @@ setup(
         "drf-yasg",
         "idna",
         "lxml",
-        "packaging",
         "psycopg2-binary",
         "pycryptodome",
         "python-dateutil",
@@ -36,7 +35,10 @@ setup(
     ],
     extras_require={
         "dev": [
-            "pylint==2.3.1",
+            "django-compressor",
+            "django-compressor-toolkit",
+            "packaging",
+            "pylint",
             "pylint-django",
             "pylint_runner",
         ]

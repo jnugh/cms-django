@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
+    'compressor',
+    'compressor_toolkit',
     'widget_tweaks',
     'easy_thumbnails',
     'filer',
@@ -96,7 +98,7 @@ DATABASES = {
         'USER': 'integreat',
         'PASSWORD': 'password',
         'HOST': 'localhost',
-        'PORT': '5433',
+        'PORT': '5432',
     }
 }
 
@@ -159,8 +161,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "../node_modules"),
+]
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'cms/static/')
 
 # Login
 LOGIN_URL = '/login'
@@ -227,3 +232,24 @@ FEDERATION = {
 #    'domain': 'my-domain.com',
 #    'seed_contacts': ['cms.integreat-app.de'],
 # }
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
+
+COMPRESS_CSS_FILTERS = [
+    'compressor.filters.css_default.CssAbsoluteFilter',
+    'compressor.filters.cssmin.CSSMinFilter',
+    'compressor.filters.template.TemplateFilter'
+]
+COMPRESS_JS_FILTERS = [
+    'compressor.filters.jsmin.JSMinFilter',
+]
+COMPRESS_PRECOMPILERS = (
+    ('module', 'compressor_toolkit.precompilers.ES6Compiler'),
+    ('css', 'compressor_toolkit.precompilers.SCSSCompiler'),
+)
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True
