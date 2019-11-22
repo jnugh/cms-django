@@ -9,25 +9,25 @@ def generate_private_key() -> str:
     priv_key_string = key_pair.exportKey('PEM').decode()
     return priv_key_string
 
-def derive_public_key_from_private_key(private_key_string: str) -> str:
-    return RSA.importKey(private_key_string).publickey().exportKey('PEM').decode()
+def derive_public_key_from_private_key(private_key: str) -> str:
+    return RSA.importKey(private_key).publickey().exportKey('PEM').decode()
 
-def derive_id_from_public_key(public_key_string: str) -> str:
+def derive_id_from_domain_and_public_key(domain, public_key: str) -> str:
     digest = SHA256.new()
-    digest.update(public_key_string.encode())
+    digest.update(public_key.encode())
     return digest.hexdigest()[:20]
 
-def sign_message(message: str, private_key_string: str) -> str:
-    private_key = RSA.import_key(private_key_string)
+def sign_message(message: str, private_key: str) -> str:
+    private_key = RSA.import_key(private_key)
     signer = PKCS1_v1_5.new(private_key)
     digest = SHA256.new()
     digest.update(message.encode())
     signature_bytes = signer.sign(digest)
     return urlsafe_b64encode(signature_bytes).decode()
 
-def verify_signature(message: str, signature: str, public_key_string: str) -> bool:
+def verify_signature(message: str, signature: str, public_key: str) -> bool:
     signature_bytes = urlsafe_b64decode(signature.encode())
-    public_key = RSA.importKey(public_key_string.encode())
+    public_key = RSA.importKey(public_key.encode())
     signer = PKCS1_v1_5.new(public_key)
     digest = SHA256.new()
     digest.update(message.encode())

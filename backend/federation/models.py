@@ -6,7 +6,6 @@ class CMSCache(models.Model):
     name = models.CharField(max_length=50)
     domain = models.CharField(max_length=50)
     public_key = models.CharField(max_length=450)
-    verified = models.BooleanField(default=False)  # a challenge has been answered correctly
     confirmed = models.BooleanField(default=False)  # the user manually confirmed the id
     use_regions = models.BooleanField(default=False)
     ask_for_cms = models.BooleanField(default=True)

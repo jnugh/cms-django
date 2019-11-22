@@ -5,10 +5,9 @@ from federation.organiser import activate_federation_feature
 
 urlpatterns = [
     url(r'^cms-ids/', access_point.cms_ids),
-    url(r'^cms-data/(?P<cms_id>[0-9,a-z]+)/$', access_point.cms_data),
-    url(r'^region-data/', access_point.region_data),
+    url(r'cms_domain/(?P<cms_id>[0-9,a-z]+)/$', access_point.cms_domain),
+    url(r'^cms-data/', access_point.cms_data),
     url(r'^offer/', access_point.receive_offer),
-    url(r'^challenge/', access_point.answer_challenge),
     url(r'^test/', tests.test), #todo: remove test-stuff
     url(r'test-activate', tests.test_activate),
     url(r'test-send-offer', tests.test_send_offer),

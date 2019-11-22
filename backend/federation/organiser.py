@@ -26,7 +26,16 @@ def update_cms_data():
                 ask_for_cms_data(cms.domain, response)
 
 def add_or_override_cms_cache(name, domain, public_key):
-    pass
+    cms_id = derive_id_from_public_key(domain, public_key)
+    try:
+        cms = CMSCache.objects.get(id=cms_id)
+        cms.name = name
+        cms.domain = domain
+        cms.public_key = public_key #todo: ist es nötig, domain und public key zu aktualisieren
+        cms.save()
+    except:
+        cms = CMSCache(id=cms_id, name=name, domain=domain, public_key=public_key)
+        cms.save()
 
 def get_id():
     return derive_id_from_public_key(get_public_key())
