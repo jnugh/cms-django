@@ -1,30 +1,21 @@
-import requests
 from Crypto import Random
 from Crypto.PublicKey import RSA
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.Hash import SHA256
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 
-
-def send_federation_request(domain: str, tail: str, params=None) -> str:
-    return requests.get("http://" + domain + "/federation/" + tail, params).text
-
-
 def generate_private_key() -> str:
     key_pair = RSA.generate(2048, Random.new().read)
     priv_key_string = key_pair.exportKey('PEM').decode()
     return priv_key_string
 
-
 def derive_public_key_from_private_key(private_key_string: str) -> str:
     return RSA.importKey(private_key_string).publickey().exportKey('PEM').decode()
-
 
 def derive_id_from_public_key(public_key_string: str) -> str:
     digest = SHA256.new()
     digest.update(public_key_string.encode())
     return digest.hexdigest()[:20]
-
 
 def sign_message(message: str, private_key_string: str) -> str:
     private_key = RSA.import_key(private_key_string)
@@ -33,7 +24,6 @@ def sign_message(message: str, private_key_string: str) -> str:
     digest.update(message.encode())
     signature_bytes = signer.sign(digest)
     return urlsafe_b64encode(signature_bytes).decode()
-
 
 def verify_signature(message: str, signature: str, public_key_string: str) -> bool:
     signature_bytes = urlsafe_b64decode(signature.encode())
